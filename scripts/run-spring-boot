@@ -1,0 +1,6 @@
+#!/bin/bash
+
+. secrets/JWT.txt
+mvn clean
+mvn spring-boot:run -Dspring-boot.run.arguments="--app.jwt.secret=${JWT_SECRET}"
+
