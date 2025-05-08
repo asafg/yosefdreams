@@ -1,21 +1,21 @@
 package org.yosefdreams.diary.service;
 
-import org.yosefdreams.diary.entity.User;
-import org.yosefdreams.diary.repository.UserRepository;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.yosefdreams.diary.entity.User;
+import org.yosefdreams.diary.repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
+	private UserRepository userRepository;
 
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;

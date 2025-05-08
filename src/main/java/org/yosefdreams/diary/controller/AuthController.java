@@ -1,5 +1,16 @@
 package org.yosefdreams.diary.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.yosefdreams.diary.payload.LoginDto;
+import org.yosefdreams.diary.service.AuthService;
+import org.yosefdreams.jwt.JwtAuthResponse;
+
+/*
 import org.yosefdreams.diary.entity.Role;
 import org.yosefdreams.diary.entity.User;
 import org.yosefdreams.diary.payload.LoginDto;
@@ -20,21 +31,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+*/
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	@Autowired
+    private AuthService authService;
+
+    // Build Login REST API
+    @PostMapping("/signin")
+    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto){
+        String token = authService.login(loginDto);
+
+        JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+        jwtAuthResponse.setAccessToken(token);
+
+        return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
+    }
+
+}
+
+
+/*
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
 	private AuthenticationManager authenticationManager;
 
-	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
 	private RoleRepository roleRepository;
 
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@PostMapping("/signin")
@@ -81,3 +112,4 @@ public class AuthController {
 
 	}
 }
+*/
