@@ -7,3 +7,5 @@ echo "    -d '{\"usernameOrEmail\": \"admin@gmail.com\", \"password\": \"admin\"
 curl -X POST "http://localhost:8080/api/auth/signin" \
      -H "Content-Type: application/json" \
      -d '{"usernameOrEmail": "admin@gmail.com", "password": "admin"}'
+
+echo -e '\n'
