@@ -5,7 +5,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.yosefdreams.diary.payload.LoginDto;
+import org.yosefdreams.diary.payload.SigninDto;
 import org.yosefdreams.jwt.JwtTokenProvider;
 
 import lombok.AllArgsConstructor;
@@ -18,11 +18,11 @@ public class AuthServiceImpl implements AuthService {
 	private JwtTokenProvider jwtTokenProvider;
 
 	@Override
-	public String login(LoginDto loginDto) {
+	public String signin(SigninDto singinDto) {
 
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(
-						loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+						singinDto.getUsernameOrEmail(), singinDto.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 

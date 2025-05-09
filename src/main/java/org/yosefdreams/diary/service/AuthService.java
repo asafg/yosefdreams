@@ -1,7 +1,7 @@
 package org.yosefdreams.diary.service;
 
-import org.yosefdreams.diary.payload.LoginDto;
+import org.yosefdreams.diary.payload.SigninDto;
 
 public interface AuthService {
-	String login(LoginDto loginDto);
+	String signin(SigninDto singinDto);
 }

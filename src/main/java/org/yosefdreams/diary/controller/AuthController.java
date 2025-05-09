@@ -6,17 +6,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.yosefdreams.diary.payload.LoginDto;
+import org.yosefdreams.diary.payload.SigninDto;
 import org.yosefdreams.diary.service.AuthService;
 import org.yosefdreams.jwt.JwtAuthResponse;
 
 /*
-import org.yosefdreams.diary.entity.Role;
-import org.yosefdreams.diary.entity.User;
-import org.yosefdreams.diary.payload.LoginDto;
-import org.yosefdreams.diary.payload.SignUpDto;
-import org.yosefdreams.diary.repository.RoleRepository;
-import org.yosefdreams.diary.repository.UserRepository;
+import org.yosefdreams.diary.test.entity.Role;
+import org.yosefdreams.diary.test.entity.User;
+import org.yosefdreams.diary.test.payload.LoginDto;
+import org.yosefdreams.diary.test.payload.SignUpDto;
+import org.yosefdreams.diary.test.repository.RoleRepository;
+import org.yosefdreams.diary.test.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,8 +43,8 @@ public class AuthController {
 
     // Build Login REST API
     @PostMapping("/signin")
-    public ResponseEntity<JwtAuthResponse> login(@RequestBody LoginDto loginDto){
-        String token = authService.login(loginDto);
+    public ResponseEntity<JwtAuthResponse> signin(@RequestBody SigninDto singinDto){
+        String token = authService.signin(singinDto);
 
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken(token);
@@ -70,10 +70,10 @@ public class AuthController {
 
 	@PostMapping("/signin")
 	public ResponseEntity<String> authenticateUser(
-			@RequestBody LoginDto loginDto) {
+			@RequestBody SigninDto singinDto) {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(
-						loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+						singinDto.getUsernameOrEmail(), singinDto.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		return new ResponseEntity<>("User signed-in successfully!.",
