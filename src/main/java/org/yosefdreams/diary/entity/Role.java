@@ -17,12 +17,12 @@ import lombok.Setter;
 @Table(name = "roles")
 public class Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @Getter
-    @Setter
-    @Column(length = 60)
-    private String name;
+  @Getter
+  @Setter
+  @Column(length = 60)
+  private String name;
 }
