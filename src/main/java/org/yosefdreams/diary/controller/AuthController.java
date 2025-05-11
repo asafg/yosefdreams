@@ -88,7 +88,7 @@ public class AuthController {
 		user.setEmail(signupDto.getEmail());
 		user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
 
-		Role roles = roleRepository.findByName("ROLE_ADMIN").get();
+		Role roles = roleRepository.findByName("ROLE_USER").get();
 		user.setRoles(Collections.singleton(roles));
 
 		userRepository.save(user);
@@ -99,63 +99,3 @@ public class AuthController {
 	}
 
 }
-
-
-/*
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-
-	private AuthenticationManager authenticationManager;
-
-	private UserRepository userRepository;
-
-	private RoleRepository roleRepository;
-
-	private PasswordEncoder passwordEncoder;
-
-	@PostMapping("/signin")
-	public ResponseEntity<String> authenticateUser(
-			@RequestBody SigninDto singinDto) {
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(
-						singinDto.getUsernameOrEmail(), singinDto.getPassword()));
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return new ResponseEntity<>("User signed-in successfully!.",
-				HttpStatus.OK);
-	}
-
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@RequestBody SignUpDto signupDto) {
-
-		// add check for username exists in a DB
-		if (userRepository.existsByUsername(signupDto.getUsername())) {
-			return new ResponseEntity<>("Username is already taken!",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		// add check for email exists in DB
-		if (userRepository.existsByEmail(signupDto.getEmail())) {
-			return new ResponseEntity<>("Email is already taken!",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		// create user object
-		User user = new User();
-		user.setName(signupDto.getName());
-		user.setUsername(signupDto.getUsername());
-		user.setEmail(signupDto.getEmail());
-		user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-
-		Role roles = roleRepository.findByName("ROLE_ADMIN").get();
-		user.setRoles(Collections.singleton(roles));
-
-		userRepository.save(user);
-
-		return new ResponseEntity<>("User registered successfully",
-				HttpStatus.OK);
-
-	}
-}
-*/
