@@ -1,6 +1,7 @@
 package org.yosefdreams.diary.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,10 +12,12 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Data
 @Entity
@@ -26,6 +29,9 @@ import lombok.Setter;
     })
 public class User {
 
+  /** According the documentation BCryptPasswordEncoder range is between 4 to 31 */
+  private static final int BCRYPT_PASSWORD_ENCODER_STRENGTH = 16;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -34,6 +40,27 @@ public class User {
   private String username;
   private String email;
   private String password;
+  private String hashedResetToken;
+
+  @Column(columnDefinition = "TIMESTAMP")
+  private LocalDateTime resetTokenCreationDate;
+
+  /**
+   * Token is sent to the user as a plain text random UUID, but stored hashed. That is, once it was
+   * sent to the user, it is no longer existing in its original form, only one way hashed, so that
+   * the system itself is unaware of the original value and therefore cannot leak it accidentally.
+   *
+   * @param token - un-hashed (plain text) token
+   */
+  public void setResetToken(String token) {
+    var hashedToken = hashResetToken(token);
+    this.hashedResetToken = hashedToken;
+  }
+
+  public String hashResetToken(String token) {
+    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(BCRYPT_PASSWORD_ENCODER_STRENGTH);
+    return encoder.encode(token);
+  }
 
   @Getter
   @Setter
