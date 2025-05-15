@@ -40,7 +40,7 @@ public class User {
   private String username;
   private String email;
   private String password;
-  private String hashedResetToken;
+  private String resetToken;
 
   @Column(columnDefinition = "TIMESTAMP")
   private LocalDateTime resetTokenCreationDate;
@@ -52,14 +52,26 @@ public class User {
    *
    * @param token - un-hashed (plain text) token
    */
-  public void setResetToken(String token) {
-    var hashedToken = hashResetToken(token);
-    this.hashedResetToken = hashedToken;
+  public void setPlainTextResetToken(String plainTextToken) {
+    var hashedToken = hashString(plainTextToken);
+    this.resetToken = hashedToken;
   }
 
-  public String hashResetToken(String token) {
+  /**
+   * Password is set by the user and stored hashed. Once set by the user it is no longer existing in
+   * its original form,only one way hashed, so that the system itself is unaware of the original
+   * value and therefore cannot leak it accidentally.
+   *
+   * @param plainTextPassword - un-hashed (plain text) password
+   */
+  public void setַַPlainTextPassword(String plainTextPassword) {
+    var hashedPassword = hashString(plainTextPassword);
+    this.password = hashedPassword;
+  }
+
+  public String hashString(String plainText) {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(BCRYPT_PASSWORD_ENCODER_STRENGTH);
-    return encoder.encode(token);
+    return encoder.encode(plainText);
   }
 
   @Getter

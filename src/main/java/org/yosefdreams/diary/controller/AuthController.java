@@ -86,7 +86,7 @@ public class AuthController {
 		user.setName(signupDto.getName());
 		user.setUsername(signupDto.getUsername());
 		user.setEmail(signupDto.getEmail());
-		user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
+		user.setַַPlainTextPassword(signupDto.getPassword());
 
 		Role roles = roleRepository.findByName("ROLE_USER").get();
 		user.setRoles(Collections.singleton(roles));
@@ -97,5 +97,4 @@ public class AuthController {
 				HttpStatus.OK);
 
 	}
-
 }
