@@ -9,6 +9,6 @@ echo '    -H "Content-Type: application/json" \' >&2
 echo "    -d '{\"username\": \"${username}\",\"email\": \"admin@gmail.com\",  \"password\": \"${password}\"}'" >&2
 curl -X POST "http://localhost:8080/api/auth/signup" \
      -H "Content-Type: application/json" \
-     -d '{"username": "${username}","email": "${email}",  "password": "${password}"}'
+     -d "{\"username\": \"${username}\",\"email\": \"${email}\",  \"password\": \"${password}\"}"
 
 echo -e '\n'
