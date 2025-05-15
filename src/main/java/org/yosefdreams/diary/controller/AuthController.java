@@ -88,8 +88,10 @@ public class AuthController {
 		user.setEmail(signupDto.getEmail());
 		user.setַַPlainTextPassword(signupDto.getPassword());
 
-		Role roles = roleRepository.findByName("ROLE_USER").get();
-		user.setRoles(Collections.singleton(roles));
+		// Get plain user role from the database 
+		// and set it to the newly created user
+		Role userRole = roleRepository.findByName("ROLE_USER").get();
+		user.setRoles(Collections.singleton(userRole));
 
 		userRepository.save(user);
 
