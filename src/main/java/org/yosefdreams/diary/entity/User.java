@@ -17,7 +17,7 @@ import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.yosefdreams.diary.utils.Hash;
 
 @Data
 @Entity
@@ -28,9 +28,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
       @UniqueConstraint(columnNames = {"email"})
     })
 public class User {
-
-  /** According the documentation BCryptPasswordEncoder range is between 4 to 31 */
-  private static final int BCRYPT_PASSWORD_ENCODER_STRENGTH = 16;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,7 +50,7 @@ public class User {
    * @param token - un-hashed (plain text) token
    */
   public void setPlainTextResetToken(String plainTextToken) {
-    var hashedToken = hashString(plainTextToken);
+    var hashedToken = Hash.hashString(plainTextToken);
     this.resetToken = hashedToken;
   }
 
@@ -65,13 +62,8 @@ public class User {
    * @param plainTextPassword - un-hashed (plain text) password
    */
   public void setַַPlainTextPassword(String plainTextPassword) {
-    var hashedPassword = hashString(plainTextPassword);
+    var hashedPassword = Hash.hashString(plainTextPassword);
     this.password = hashedPassword;
-  }
-
-  public String hashString(String plainText) {
-    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(BCRYPT_PASSWORD_ENCODER_STRENGTH);
-    return encoder.encode(plainText);
   }
 
   @Getter
