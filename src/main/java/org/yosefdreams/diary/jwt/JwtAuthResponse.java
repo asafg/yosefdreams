@@ -1,4 +1,4 @@
-package org.yosefdreams.jwt;
+package org.yosefdreams.diary.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package org.yosefdreams.jwt;
+package org.yosefdreams.diary.jwt;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

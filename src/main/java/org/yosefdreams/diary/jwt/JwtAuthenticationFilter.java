@@ -1,4 +1,4 @@
-package org.yosefdreams.jwt;
+package org.yosefdreams.diary.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
