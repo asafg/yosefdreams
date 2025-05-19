@@ -1,7 +1,8 @@
 package org.yosefdreams.diary.service;
 
-import org.yosefdreams.diary.payload.SigninDto;
+import org.yosefdreams.diary.payload.ChangePasswordDto;
 
 public interface AuthService {
-  String signin(SigninDto singinDto);
+
+  boolean changePassword(ChangePasswordDto changePasswordDto);
 }
