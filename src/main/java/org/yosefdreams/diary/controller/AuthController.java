@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import org.yosefdreams.diary.utils.Hash;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+  private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
   public static final int RESET_TOKEN_MAX_AGE_MINUTES = 15;
 
   @Autowired private AuthenticationManager authenticationManager;
@@ -59,15 +62,22 @@ public class AuthController {
     return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
   }
 
+  /**
+   * User signup (registration)
+   *
+   * @param signupDto contains necessary user details (username, password and email)
+   * @return ResponseEntity with HttpStatus.OK for successful user signup or HttpStatus.BAD_REQUEST
+   *     otherwise.
+   */
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@RequestBody SignupDto signupDto) {
 
-    // add check for username exists in a DB
+    // make sure username is not already taken.
     if (userRepository.existsByUsername(signupDto.getUsername())) {
       return new ResponseEntity<>("Username is already taken!", HttpStatus.BAD_REQUEST);
     }
 
-    // add check for email exists in DB
+    // make sure email is not already taken.
     if (userRepository.existsByEmail(signupDto.getEmail())) {
       return new ResponseEntity<>("Email is already taken!", HttpStatus.BAD_REQUEST);
     }
@@ -94,11 +104,12 @@ public class AuthController {
 
     // add check for username exists in a DB
     Optional<User> userOptional = userRepository.findByEmail(email);
+    logger.info("userOptional is empty? " + userOptional.isEmpty());
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       String resetToken = generateResetToken();
       // TODO: replace debug print with actual sending of the reset token via email.
-      System.out.println("DEBUG, don't forget to remove, resetToken: " + resetToken);
+      logger.info("resetToken: " + resetToken);
       // We don't keep the token itself, but its hash so that the token would not leak accidentally.
       String hashedResetToken = Hash.hashString(resetToken);
       user.setResetToken(hashedResetToken);
@@ -107,7 +118,7 @@ public class AuthController {
     }
 
     return new ResponseEntity<>(
-        "If you email is found in our database, a reset message would be sent to your email address",
+        "If your email is found in our database, a reset message would be sent to your email address",
         HttpStatus.OK);
   }
 
