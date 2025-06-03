@@ -39,7 +39,7 @@ public class User {
   private String password;
   private String resetToken;
 
-  @Column(columnDefinition = "TIMESTAMP")
+  @Column(name = "reset_token_creation_date", columnDefinition = "TIMESTAMP")
   private LocalDateTime resetTokenCreationDate;
 
   /**

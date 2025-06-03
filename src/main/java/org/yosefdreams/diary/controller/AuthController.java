@@ -15,14 +15,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.yosefdreams.diary.config.SecurityConfig;
 import org.yosefdreams.diary.entity.Role;
 import org.yosefdreams.diary.entity.User;
 import org.yosefdreams.diary.jwt.JwtAuthResponse;
 import org.yosefdreams.diary.jwt.JwtTokenProvider;
+import org.yosefdreams.diary.payload.ChangePasswordDto;
 import org.yosefdreams.diary.payload.SigninDto;
 import org.yosefdreams.diary.payload.SignupDto;
 import org.yosefdreams.diary.repository.RoleRepository;
@@ -103,18 +106,28 @@ public class AuthController {
   public ResponseEntity<?> forgotPasseord(@RequestBody String email) {
 
     // add check for username exists in a DB
-    Optional<User> userOptional = userRepository.findByEmail(email);
+    Optional<User> userOptional = userRepository.findByUsernameOrEmail(email, email);
     logger.info("userOptional is empty? " + userOptional.isEmpty());
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       String resetToken = generateResetToken();
+      logger.info("reset token plain text: **" + resetToken + "**");
+
       // TODO: replace debug print with actual sending of the reset token via email.
-      logger.info("resetToken: " + resetToken);
       // We don't keep the token itself, but its hash so that the token would not leak accidentally.
       String hashedResetToken = Hash.hashString(resetToken);
+      logger.info("hashedResetToken: " + hashedResetToken);
+      String hashedResetTokenAgain = Hash.hashString(resetToken);
+      logger.info("hashedResetTokenAgain: " + hashedResetTokenAgain);
       user.setResetToken(hashedResetToken);
       user.setResetTokenCreationDate(LocalDateTime.now());
+
+      logger.info("Before saving -> resetToken: " + resetToken);
+      logger.info("Before saving -> user.getResetToken(): " + user.getResetToken());
+      logger.info("Before saving -> resetTokenCreationDate: " + user.getResetTokenCreationDate());
       userRepository.save(user);
+      logger.info("After saving -> user.getResetToken(): " + user.getResetToken());
+      logger.info("After saving -> resetTokenCreationDate: " + user.getResetTokenCreationDate());
     }
 
     return new ResponseEntity<>(
@@ -136,13 +149,58 @@ public class AuthController {
         .toString();
   }
 
+  @PostMapping("/change-password")
+  public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
+    logger.info("changePasswordDto.email: " + changePasswordDto.getEmail());
+    logger.info("changePasswordDto.newPassword: " + changePasswordDto.getNewPassword());
+    logger.info("changePasswordDto.resetToken: **" + changePasswordDto.getResetToken() + "**");
+
+    Optional<User> userOptional =
+        userRepository.findByUsernameOrEmail(
+            changePasswordDto.getEmail(), changePasswordDto.getEmail());
+    logger.info("User was fetched? " + userOptional.isPresent());
+    logger.info(
+        "Fetched resetTokenCreationDate: "
+            + userOptional.map(User::getResetTokenCreationDate).orElse(null));
+    logger.info("userOptional is empty? " + userOptional.isEmpty());
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      boolean isTokenValid = // ---- plain text token --------  --- hashed token ----
+          doesTokenMatchItsHash(changePasswordDto.getResetToken(), user.getResetToken());
+      logger.info("is token valid? " + isTokenValid);
+      logger.info("user.getResetTokenCreationDate(): " + user.getResetTokenCreationDate());
+      boolean hasTokenExpired = hasTokenExpired(user.getResetTokenCreationDate());
+      if (isTokenValid && !hasTokenExpired) {
+        logger.info("old password hash: " + user.getPassword());
+        user.setPassword(changePasswordDto.getNewPassword());
+        logger.info("new password hash: " + user.getPassword());
+        userRepository.save(user);
+        return new ResponseEntity<>("Password was changed successfully", HttpStatus.OK);
+      }
+    }
+    return new ResponseEntity<>("Could not change password", HttpStatus.BAD_REQUEST);
+  }
+
+  /**
+   * Verifies the token, make sure that hashing the token gives the same hash that is stored in the
+   * database for that user's token.
+   *
+   * @param rawToken - from web client/front end
+   * @param hashedToken - from the database
+   * @return true if the token is authentic false otherwise
+   */
+  private boolean doesTokenMatchItsHash(String rawToken, String hashedToken) {
+    PasswordEncoder encoder = SecurityConfig.passwordEncoder();
+    return encoder.matches(rawToken, hashedToken);
+  }
+
   /**
    * Check whether the created token expired or not.
    *
    * @param tokenCreationDate
    * @return true or false
    */
-  private boolean isTokenExpired(final LocalDateTime tokenCreationDate) {
+  private boolean hasTokenExpired(final LocalDateTime tokenCreationDate) {
 
     LocalDateTime now = LocalDateTime.now();
     Duration diff = Duration.between(tokenCreationDate, now);

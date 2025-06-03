@@ -11,7 +11,7 @@ public class Hash {
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(BCRYPT_PASSWORD_ENCODER_STRENGTH);
     // According to
     // https://docs.spring.io/spring-security/site/docs/5.3.0.RELEASE/reference/html5/#authentication-password-storage
-    // a prefix of the password encoder being used should be add to the hash
+    // a prefix of the password encoder being used should be added to the hash
     // in order to allow identify the password encoder that created this hash.
     return "{bcrypt}" + encoder.encode(plainText);
   }
