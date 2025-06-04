@@ -11,8 +11,6 @@ public interface UserRepository extends JpaRepository<org.yosefdreams.diary.enti
 
   Optional<User> findByUsername(String username);
 
-  Optional<User> findByResetToken(String resetToken);
-
   boolean existsByUsername(String username);
 
   boolean existsByEmail(String email);
