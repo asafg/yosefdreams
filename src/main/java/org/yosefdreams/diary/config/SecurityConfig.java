@@ -28,14 +28,14 @@ public class SecurityConfig {
 
   private JwtAuthenticationFilter authenticationFilter;
 
-  @Bean
-  public static PasswordEncoder passwordEncoder() {
+    @Bean
+    public static PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-      throws Exception {
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+            throws Exception {
     return configuration.getAuthenticationManager();
   }
 
