@@ -15,12 +15,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.yosefdreams.diary.config.SecurityConfig;
 import org.yosefdreams.diary.entity.Role;
 import org.yosefdreams.diary.entity.User;
 import org.yosefdreams.diary.jwt.JwtAuthResponse;
@@ -44,6 +42,7 @@ public class AuthController {
   @Autowired private JwtTokenProvider jwtTokenProvider;
   @Autowired private UserRepository userRepository;
   @Autowired private RoleRepository roleRepository;
+  @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
   public AuthController() {}
 
@@ -190,8 +189,7 @@ public class AuthController {
    * @return true if the token is authentic false otherwise
    */
   private boolean doesTokenMatchItsHash(String rawToken, String hashedToken) {
-    PasswordEncoder encoder = SecurityConfig.passwordEncoder();
-    return encoder.matches(rawToken, hashedToken);
+    return passwordEncoder.matches(rawToken, hashedToken);
   }
 
   /**
