@@ -28,6 +28,7 @@ import org.yosefdreams.diary.payload.SigninDto;
 import org.yosefdreams.diary.payload.SignupDto;
 import org.yosefdreams.diary.repository.RoleRepository;
 import org.yosefdreams.diary.repository.UserRepository;
+import org.yosefdreams.diary.service.EmailService;
 import org.yosefdreams.diary.utils.Hash;
 
 @AllArgsConstructor
@@ -43,6 +44,7 @@ public class AuthController {
   @Autowired private UserRepository userRepository;
   @Autowired private RoleRepository roleRepository;
   @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+  @Autowired private EmailService emailService;
 
   public AuthController() {}
 
@@ -112,12 +114,8 @@ public class AuthController {
       String resetToken = generateResetToken();
       logger.info("reset token plain text: **" + resetToken + "**");
 
-      // TODO: replace debug print with actual sending of the reset token via email.
-      // We don't keep the token itself, but its hash so that the token would not leak accidentally.
+      // Hash the reset token before storing it in the database
       String hashedResetToken = Hash.hashString(resetToken);
-      logger.info("hashedResetToken: " + hashedResetToken);
-      String hashedResetTokenAgain = Hash.hashString(resetToken);
-      logger.info("hashedResetTokenAgain: " + hashedResetTokenAgain);
       user.setResetToken(hashedResetToken);
       user.setResetTokenCreationDate(LocalDateTime.now());
 
